@@ -12,6 +12,10 @@ pypdf2 = "*"
 chromadb = "*"
 faiss-cpu = "*"
 langchain-google-genai = "*"
+transformers = "*"
+prompt-engineering = "*"
+huggingface-hub = "*"
+requests = "*"
 
 [dev-packages]
 

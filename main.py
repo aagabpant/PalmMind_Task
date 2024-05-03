@@ -8,6 +8,8 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.chains.question_answering import load_qa_chain
 from langchain.prompts import PromptTemplate
 from dotenv import load_dotenv
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+
 load_dotenv()
 genai.configure(api_key=os.getenv("GENAI_API_KEY"))
 
@@ -22,13 +24,23 @@ def get_pdf_text(pdf_docs):
 
 
 def get_text_chunks(text, chunk_size=10000):
-  chunks = []
-  start_index = 0
-  while start_index < len(text):
-    end_index = min(start_index + chunk_size, len(text))
-    chunk = text[start_index:end_index]
-    chunks.append(chunk)
-    start_index = end_index
+  """
+  This function splits text into chunks using RecursiveCharacterTextSplitter.
+
+  Args:
+      text: The text to be chunked.
+      chunk_size: The desired maximum size of each chunk (default: 10000).
+
+  Returns:
+      A list of text chunks.
+  """
+
+  # Define the text splitter with desired chunk size and separators
+  splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size, separators=["\n\n", "\n", " ", "."])
+
+  # Split the text using the splitter
+  chunks = splitter.split_text(text)
+
   return chunks
 
 
@@ -49,7 +61,7 @@ def get_conversational_chain():
     **Answer the question in detail, using the provided documents and your knowledge.** 
     * If the answer can be directly found in the documents, provide it with context from the documents.
     * If the answer cannot be directly found in the documents, but can be inferred based on your knowledge and the documents, provide your best answer and explain how you arrived at it. 
-    * If the answer cannot be found or inferred, inform the user that the answer is not available in the documents. 
+    * If the answer cannot be found or inferred, inform the user that the answer is not available in the documents,but try your best to answer any user queries. 
 
     **Context:**
 
